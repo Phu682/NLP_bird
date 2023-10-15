@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chapter 1. Introduction</title>
+    </head> 
+<body>
+
+<p>Household names like Echo (Alexa), Siri, and Google Translate have at least one thing in common.
+    They are all products derived from the application of natural language processing (NLP), one of the
+    two main subject matters of this book. NLP refers to a set of techniques involving the application of
+    statistical methods, with or without insights from linguistics, to understand text for the sake of solving
+    real-world tasks. This “understanding” of text is mainly derived by transforming texts to useable
+    computational representations, which are discrete or continuous combinatorial structures such as
+    vectors or tensors, graphs, and trees.</p>
+
+<p>The learning of representations suitable for a task from data (text in this case) is the subject of machine
+    learning. The application of machine learning to textual data has more than three decades of history,
+    but in the last 10 years a set of machine learning techniques known as deep learning have continued
+    to evolve and begun to prove highly effective for various artificial intelligence (AI) tasks in NLP,
+    speech, and computer vision. Deep learning is another main subject that we cover; thus, this book is a
+    study of NLP and deep learning</p>
+
+<h1>NOTE</h1>
+<p>References are listed at the end of each chapter in this book.</p>
+
+<p>Put simply, deep learning enables one to efficiently learn representations from data using an
+    abstraction called the computational graph and numerical optimization techniques. Such is the success
+    of deep learning and computational graphs that major tech companies such as Google, Facebook, and
+    Amazon have published implementations of computational graph frameworks and libraries built on
+    them to capture the mindshare of researchers and engineers. In this book, we consider PyTorch, an
+    increasingly popular Python-based computational graph framework to implement deep learning
+    algorithms. In this chapter, we explain what computational graphs are and our choice of using PyTorch
+    as the framework</p>
+
+<p>The field of machine learning and deep learning is vast. In this chapter, and for most of this book, we
+    mostly consider what’s called supervised learning; that is, learning with labeled training examples. We
+    explain the supervised learning paradigm that will become the foundation for the book. If you are not
+    familiar with many of these terms so far, you’re in the right place. This chapter, along with future
+    chapters, not only clarifies but also dives deeper into them. If you are already familiar with some of
+    the terminology and concepts mentioned here, we still encourage you to follow along, for two reasons:
+    to establish a shared vocabulary for rest of the book, and to fill any gaps needed to understand the
+    future chapters.</p>
+
+<p>The goals for this chapter are to:</p>
+<p>- Develop a clear understanding of the supervised learning paradigm, understand terminology, and
+    develop a conceptual framework to approach learning tasks for future chapters</p><hr>
+
+
+
+
+
+<p>- Learn how to encode inputs for the learning tasks.</p>
+<p>- Understand what computational graphs are.</p>
+<p>- Master the basics of PyTorch.</p>
+
+<h1>Let’s get started!</h1>
+<h1>The Supervised Learning Paradigm</h1>
+<p>Supervision in machine learning, or supervised learning, refers to cases where the ground truth for the
+    targets (what’s being predicted) is available for the observations. For example, in document
+    classification, the target is a categorical label, and the observation is a document. In machine
+    translation, the observation is a sentence in one language and the target is a sentence in another
+    language. With this understanding of the input data, we illustrate the supervised learning paradigm in
+    igure 1-1.</p>
+
+<p>We can break down the supervised learning paradigm, as illustrated in
+    igure 1-1, to six mainconcepts:</p>
+
+<p>Observations</p>
+    Observations are items about which we want to predict something. We denote observations using
+    x. We sometimes refer to the observations as inputs.</p>
+<p>Targets</p>
+<p>Targets are labels corresponding to an observation. These are usually the things being predicted.
+    Following standard notations in machine learning/deep learning, we use y to refer to these.
+    Sometimes, these labels known as the ground truth.</p>
+<p>Model</p>
+<p>A model is a mathematical expression or a function that takes an observation, x, and predicts the
+    value of its target label.</p>
+<p>Parameters</p>
+<p>Sometimes also called weights, these parameterize the model. It is standard to use the notation w
+    (for weights) or ŵ.</p>
+<p>Predictions</p>
+<p>Predictions, also called estimates, are the values of the targets guessed by the model, given the
+    observations. We denote these using a “hat” notation. So, the prediction of a target y is denoted as ŷ.</p><hr>
+
+
+
+
+
+<p>Loss function</p>
+<p>A loss function is a function that compares how far off a prediction is from its target for
+    observations in the training data. Given a target and its prediction, the loss function assigns a scalar
+    real value called the loss. The lower the value of the loss, the better the model is at predicting the
+    target. We use L to denote the loss function.</p>
+<p>Although it is not strictly necessary to be mathematically formal to be productive in NLP/deep
+    learning modeling or to write this book, we will formally restate the supervised learning paradigm to
+    equip readers who are new to the area with the standard terminology so that they have some familiarity
+    with the notations and style of writing in the research papers they may encounter on arXiv.</p>
+<p>Consider a dataset with n examples. Given this dataset, we want to learn a function
+    (a model) f parameterized by weights w. That is, we make an assumption about the structure of f, and
+    given that structure, the learned values of the weights w will fully characterize the model. For a given
+    input X, the model predicts ŷ as the target:</p>
+<p>In supervised learning, for training examples, we know the true target y for an observation. The loss
+    for this instance will then be L(y, ŷ). Supervised learning then becomes a process of finding the
+    optimal parameters/weights w that will minimize the cumulative loss for all the n examples.</p>
+
+<h1>TRAINING USING (STOCHASTIC) GRADIENT DESCENT</h1>
+<p>The goal of supervised learning is to pick values of the parameters that minimize the loss function
+    for a given dataset. In other words, this is equivalent to finding roots in an equation. We know that
+    gradient descent is a common technique to find roots of an equation. Recall that in traditional
+    gradient descent, we guess some initial values for the roots (parameters) and update the
+    parameters iteratively until the objective function (loss function) evaluates to a value below an
+    acceptable threshold (aka convergence criterion). For large datasets, implementation of traditional
+    gradient descent over the entire dataset is usually impossible due to memory constraints, and very
+    slow due to the computational expense. Instead, an approximation for gradient descent called
+    stochastic gradient descent (SGD) is usually employed. In the stochastic case, a data point or a
+    subset of data points are picked at random, and the gradient is computed for that subset. When a
+    single data point is used, the approach is called pure SGD, and when a subset of (more than one)
+    data points are used, we refer to it as minibatch SGD. Often the words “pure” and “minibatch” are
+    dropped when the approach being used is clear based on the context. In practice, pure SGD is
+    rarely used because it results in very slow convergence due to noisy updates. There are different
+    variants of the general SGD algorithm, all aiming for faster convergence. In later chapters, we
+    explore some of these variants along with how the gradients are used in updating the parameters.
+    This process of iteratively updating the parameters is called backpropagation. Each step (aka
+    epoch) of backpropagation consists of a forward pass and a backward pass. The forward pass
+    evaluates the inputs with the current values of the parameters and computes the loss function. The
+    backward pass updates the parameters using the gradient of the loss</p>
+
+<p>Observe that until now, nothing here is specific to deep learning or neural networks. The directions
+    of the arrows in igure 1-1 indicate the “flow” of data while training the system. We will have more to
+    say about training and on the concept of “flow” in Computational Graphs”, but first, let’s take a look
+    at how we can represent our inputs and targets in NLP problems numerically so that we can train models and predict outcomes.</p><hr>
+
+
+
+
+
+<h1>Observation and Target Encoding</h1>
+<p>We will need to represent the observations (text) numerically to use them in conjunction with machine
+    learning algorithms. igure 1-2 presents a visual depiction.</p>
+<p>A simple way to represent text is as a numerical vector. There are innumerable ways to perform this
+    mapping/representation. In fact, much of this book is dedicated to learning such representations for a
+    task from data. However, we begin with some simple count-based representations that are based on
+    heuristics. Though simple, they are incredibly powerful as they are and can serve as a starting point for
+    richer representation learning. All of these count-based representations start with a vector of fixed
+    dimension.</p>
+
+<p>One-Hot Representation</p>
+<p>The one-hot representation, as the name suggests, starts with a zero vector, and sets as 1 the
+    corresponding entry in the vector if the word is present in the sentence or document. Consider the
+    following two sentences:</p>
+<p>Tokenizing the sentences, ignoring punctuation, and treating everything as lowercase, will yield a
+    vocabulary of size 8: {time, fruit, flies, like, a, an, arrow, banana}. So, we
+    can represent each word with an eight-dimensional one-hot vector. In this book, we use 1 to mean
+    one-hot representation for a token/word w.</p>
+<p>The collapsed one-hot representation for a phrase, sentence, or a document is simply a logical OR of
+    the one-hot representations of its constituent words. Using the encoding shown in
+    igure 1-3, the onehot representation for the phrase “like a banana” will be a 3×8 matrix, where the columns are the
+    eight-dimensional one-hot vectors. It is also common to see a “collapsed” or a binary encoding where
+    the text/phrase is represented by a vector the length of the vocabulary, with 0s and 1s to indicate
+    absence or presence of a word. The binary encoding for “like a banana” would then be: [0, 0, 0,
+    1, 1, 0, 0, 1].</p><hr>
+
+
+
+
+
+<h1>NOTE</h1>
+<p>At this point, if you are cringing that we collapsed the two different meanings (or senses)
+    of “flies,” congratulations, astute reader! Language is full of ambiguity, but we can still
+    build useful solutions by making horribly simplifying assumptions. It is possible to learn
+    sense-specific representations, but we are getting ahead of ourselves now.</p>
+
+<p>Although we will rarely use anything other than a one-hot representation for the inputs in this book,
+    we will now introduce the Term-Frequency (TF) and Term-Frequency-Inverse-Document-Frequency
+    (TF-IDF) representations. This is done because of their popularity in NLP, for historical reasons, and
+    for the sake of completeness. These representations have a long history in information retrieval (IR)
+    and are actively used even today in production NLP systems.</p>
+
+<h1>TF Representation</h1>
+<p>The TF representation of a phrase, sentence, or document is simply the sum of the one-hot
+    representations of its constituent words. To continue with our silly examples, using the aforementioned
+    one-hot encoding, the sentence “Fruit flies like time flies a fruit” has the following TF representation:
+    [1, 2, 2, 1, 1, 0, 0, 0]. Notice that each entry is a count of the number of times the
+    corresponding word appears in the sentence (corpus). We denote the TF of a word w by TF(w).</p><hr>
+
+
+
+
+
+<h1>TF-IDF Representation</h1>
+<p>Consider a collection of patent documents. You would expect most of them to contain words like
+    claim, system, method, procedure, and so on, often repeated multiple times. The TF representation
+    weights words proportionally to their frequency. However, common words such as “claim” do not add
+    anything to our understanding of a specific patent. Conversely, if a rare word (such as
+    “tetrafluoroethylene”) occurs less frequently but is quite likely to be indicative of the nature of the
+    patent document, we would want to give it a larger weight in our representation. The InverseDocument-Frequency (IDF) is a heuristic to do exactly that.</p>
+<p>The IDF representation penalizes common tokens and rewards rare tokens in the vector representation.
+    The IDF(w) of a token w is defined with respect to a corpus as:</p>
+<p>where n is the number of documents containing the word w and N is the total number of documents.
+    The TF-IDF score is simply the product TF(w) * IDF(w). First, notice how if there is a very common
+    word that occurs in all documents (i.e., n = N), IDF(w) is 0 and the TF-IDF score is 0, thereby
+    completely penalizing that term. Second, if a term occurs very rarely, perhaps in only one document,
+    the IDF will be the maximum possible value, log N. xample 1-2 shows how to generate a TF-IDF
+    representation of a list of English sentences using scikit-learn.</p><hr>
+
+
+
+
+
+<p>In deep learning, it is rare to see inputs encoded using heuristic representations like TF­IDF because
+    the goal is to learn a representation. Often, we start with a one­hot encoding using integer indices and
+    a special “embedding lookup” layer to construct inputs to the neural network. In later chapters, we
+    present several examples of doing this.</p>
+
+<h1>Target Encoding</h1>
+<p>As noted in the "The Supervised Learning Paradigm”, the exact nature of the target variable can
+    depend on the NLP task being solved. For example, in cases of machine translation, summarization,
+    and question answering, the target is also text and is encoded using approaches such as the previously
+    described one-hot encoding.</p>
+<p>Many NLP tasks actually use categorical labels, wherein the model must predict one of a fixed set of
+    labels. A common way to encode this is to use a unique index per label, but this simple representation
+    can become problematic when the number of output labels is simply too large. An example of this is
+    the language modeling problem, in which the task is to predict the next word, given the words seen in
+    the past. The label space is the entire vocabulary of a language, which can easily grow to several
+    hundred thousand, including special characters, names, and so on. We revisit this problem in later
+    chapters and see how to address it.</p>
+<p>Some NLP problems involve predicting a numerical value from a given text. For example, given an
+    English essay, we might need to assign a numeric grade or a readability score. Given a restaurant
+    review snippet, we might need to predict a numerical star rating up to the first decimal. Given a user’s
+    tweets, we might be required to predict the user’s age group. Several approaches exist to encode
+    numerical targets, but simply placing the targets into categorical “bins”—for example, “0-18,” “19-25,” “25-30,” and so on—and treating it as an ordinal classification problem is a reasonable approach.
+    The binning can be uniform or nonuniform and data-driven. Although a detailed discussion of this
+    is beyond the scope of this book, we draw your attention to these issues because target encoding
+    affects performance dramatically in such cases, and we encourage you to see Dougherty et al. (1995)
+    and the references therein.</p><hr>
+
+
+
+
+
+<h1>Computational Graphs</h1>
+<p>igure 1-1 summarized the supervised learning (training) paradigm as a data flow architecture where
+    the inputs are transformed by the model (a mathematical expression) to obtain predictions, and the loss
+    function (another expression) to provide a feedback signal to adjust the parameters of the model. This
+    data flow can be conveniently implemented using the computational graph data structure.
+    Technically, a computational graph is an abstraction that models mathematical expressions. In the
+    context of deep learning, the implementations of the computational graph (such as Theano,
+    TensorFlow, and PyTorch) do additional bookkeeping to implement automatic differentiation needed
+    to obtain gradients of parameters during training in the supervised learning paradigm. We explore this
+    further in “PyTorch Basics”. Inference (or prediction) is simply expression evaluation (a forward flow
+    on a computational graph). Let’s see how the computational graph models expressions. Consider the
+    expression:</p>
+<p>This can be written as two subexpressions, z = wx and y = z + b. We can then represent the original
+    expression using a directed acyclic graph (DAG) in which the nodes are the mathematical operations,
+    like multiplication and addition. The inputs to the operations are the incoming edges to the nodes and
+    the output of each operation is the outgoing edge. So, for the expression y = wx + b, the computational
+    graph is as illustrated in igure 1-6. In the following section, we see how PyTorch allows us to create
+    computational graphs in a straightforward manner and how it enables us to calculate the gradients
+    without concerning ourselves with any bookkeeping.</p>
+
+<h1>PyTorch Basics</h1>
+<p>In this book, we extensively use PyTorch for implementing our deep learning models. PyTorch is an
+    open source, community-driven deep learning framework. Unlike Theano, Caffe, and TensorFlow,
+    PyTorch implements a tape-based utomatic differentiation method that allows us to define and
+    execute computational graphs dynamically. This is extremely helpful for debugging and also for
+    constructing sophisticated models with minimal effort.</p><hr>
+
+
+
+
+
+<h1>YNAMIC VERSUS STATIC COMPUTATIONAL GRAPHS</h1>
+<p>Static frameworks like Theano, Caffe, and TensorFlow require the computational graph to be first
+    declared, compiled, and then executed. Although this leads to extremely efficient
+    implementations (useful in production and mobile settings), it can become quite cumbersome
+    during research and development. Modern frameworks like Chainer, DyNet, and PyTorch
+    implement dynamic computational graphs to allow for a more flexible, imperative style of
+    development, without needing to compile the models before every execution. Dynamic
+    computational graphs are especially useful in modeling NLP tasks for which each input could
+    potentially result in a different graph structure.</p>
+<p>PyTorch is an optimized tensor manipulation library that offers an array of packages for deep learning.
+    At the core of the library is the tensor, which is a mathematical object holding some multidimensional
+    data. A tensor of order zero is just a number, or a scalar. A tensor of order one (1st-order tensor) is an
+    array of numbers, or a vector. Similarly, a 2nd-order tensor is an array of vectors, or a matrix.
+    Therefore, a tensor can be generalized as an n-dimensional array of scalars, as illustrated in igure 1-7.</p>
+<p>In this section, we take our first steps with PyTorch to familiarize you with various PyTorch
+    operations. These include:</p>
+<p>- Creating tensors</p>
+<p>- Operations with tensors</p>
+<p>- Indexing, slicing, and joining with tensors</p>
+<p>- Computing gradients with tensors</p>
+<p>- Using CUDA tensors with GPUs</p>
+<p>We recommend that at this point you have a Python 3.5+ notebook ready with PyTorch installed, as
+    described next, and that you follow along with the examples. We also recommend working through
+    the exercises later in the chapter.</p>
+
+<h1>Installing PyTorch</h1>
+<p>The first step is to install PyTorch on your machines by choosing your system preferences at ytorch.org. Choose your operating system and then the package manager (we recommend Conda or
+    Pip), followed by the version of Python that you are using (we recommend 3.5+). This will generate
+    the command for you to execute to install PyTorch. As of this writing, the install command for the
+    Conda environment, for example, is as follows:</p><hr>
+
+
+
+
+
+<h1>NOTE</h1>
+<p>If you have a CUDA­enabled graphics processor unit (GPU), you should also choose the
+    appropriate version of CUDA. For additional details, follow the installation instructions on
+    ytorch.org</p>
+
+<h1>Creating Tensors</h1>
+<p>First, we define a helper function, describe(x), that will summarize various properties of a tensor
+    x, such as the type of the tensor, the dimensions of the tensor, and the contents of the tensor:</p>
+<p>PyTorch allows us to create tensors in many different ways using the torch package. One way to
+    create a tensor is to initialize a random one by specifying its dimensions, as shown in xample 1-3.</p>
+<p>We can also create a tensor by randomly initializing it with values from a uniform distribution on the
+    interval [0, 1) or the standard normal distribution as illustrated in xample 1-4. Randomly
+    initialized tensors, say from the uniform distribution, are important, as you will see in Chapters 3 and 4</p><hr>
+
+
+
+
+
+<p>We can also create tensors all filled with the same scalar. For creating a tensor of zeros or ones, we
+    have built-in functions, and for filling it with specific values, we can use the fill_() method. Any
+    PyTorch method with an underscore (_) refers to an in-place operation; that is, it modifies the
+    content in place without creating a new object, as shown in xample 1-5.</p><hr>
+
+
+
+
+
+<p>The values can either come from a list, as in the preceding example, or from a NumPy array. And, of
+    course, we can always go from a PyTorch tensor to a NumPy array, as well. Notice that the type of the
+    tensor is DoubleTensor instead of the default FloatTensor (see the next section). This
+    corresponds with the data type of the NumPy random matrix, a float64, as presented in xample 1</p>
+<p>The ability to convert between NumPy arrays and PyTorch tensors becomes important when working
+    with legacy libraries that use NumPy­formatted numerical values.</p>
+
+<h1>Tensor Types and Size</h1>
+<p>Each tensor has an associated type and size. The default tensor type when you use the
+    torch.Tensor constructor is torch.FloatTensor. However, you can convert a tensor to a
+    different type (float, long, double, etc.) by specifying it at initialization or later using one of the
+    typecasting methods. There are two ways to specify the initialization type: either by directly calling
+    the constructor of a specific tensor type, such as FloatTensor or LongTensor, or using a special
+    method, torch.tensor(), and providing the dtype, as shown in xample 1-8.</p><hr>
+
+
+
+
+
+<p>We use the shape property and size() method of a tensor object to access the measurements of its
+    dimensions. The two ways of accessing these measurements are mostly synonymous. Inspecting the
+    shape of the tensor is an indispensable tool in debugging PyTorch code.</p>
+
+<h1>Tensor Operations</h1>
+<p>After you have created your tensors, you can operate on them like you would do with traditional
+    programming language types, like +, -, *, /. Instead of the operators, you can also use functions like
+    .add(), as shown in xample 1-9, that correspond to the symbolic operators.</p><hr>
+
+
+
+
+
+<p>There are also operations that you can apply to a specific dimension of a tensor. As you might have
+    already noticed, for a 2D tensor we represent rows as the dimension 0 and columns as dimension 1, as
+    illustrated in xample 1-10.</p><hr>
+
+
+
+
+
+<p>Often, we need to do more complex operations that involve a combination of indexing, slicing,joining, and mutations. Like NumPy and other numeric libraries, PyTorch has built­in functions to
+    make such tensor manipulations very simple.<hr>
+
+
+
+
+
+<h1>Indexing, Slicing, and Joining</h1>
+<p>If you are a NumPy user, PyTorch’s indexing and slicing scheme, shown in xample 1-11, might be very familiar to you.</p>
+<p>xample 1-12 demonstrates that PyTorch also has functions for complex indexing and slicing
+operations, where you might be interested in accessing noncontiguous locations of a tensor efficiently.</p><hr>
+
+
+
+
+
+<p>Notice that the indices are a LongTensor; this is a requirement for indexing using PyTorch
+    functions. We can also join tensors using built-in concatenation functions, as shown in xample 1-13,
+    by specifying the tensors and dimension.</p><hr>
+
+
+
+
+
+<p>PyTorch also implements highly efficient linear algebra operations on tensors, such as multiplication,
+    inverse, and trace, as you can see in xample 1-14.</p><hr>
+
+
+
+
+
+<p>So far, we have looked at ways to create and manipulate constant PyTorch tensor objects. Just as a
+    programming language (such as Python) has variables that encapsulate a piece of data and has
+    additional information about that data (like the memory address where it is stored, for example),
+    PyTorch tensors handle the bookkeeping needed for building computational graphs for machine
+    learning simply by enabling a Boolean flag at instantiation time.</p>
+
+<h1>Tensors and Computational Graphs</h1>
+<p>PyTorch tensor class encapsulates the data (the tensor itself) and a range of operations, such as
+    algebraic operations, indexing, and reshaping operations. However, as shown in xample 1-15, when
+    the requires_grad Boolean flag is set to True on a tensor, bookkeeping operations are enabled
+    that can track the gradient at the tensor as well as the gradient function, both of which are needed to
+    facilitate the gradient-based learning discussed in “The Supervised Learning Paradigm”.</p><hr>
+
+
+
+
+
+<p>When you create a tensor with requires_grad=True, you are requiring PyTorch to manage
+    bookkeeping information that computes gradients. First, PyTorch will keep track of the values of the
+    forward pass. Then, at the end of the computations, a single scalar is used to compute a backward pass.
+    The backward pass is initiated by using the backward() method on a tensor resulting from the
+    evaluation of a loss function. The backward pass computes a gradient value for a tensor object that
+    participated in the forward pass.</p>
+<p>In general, the gradient is a value that represents the slope of a function output with respect to the
+    function input. In the computational graph setting, gradients exist for each parameter in the model and
+    can be thought of as the parameter’s contribution to the error signal. In PyTorch, you can access the
+    gradients for the nodes in the computational graph by using the .grad member variable. Optimizers
+    use the .grad variable to update the values of the parameters.</p><hr>
+
+
+
+
+
+<h1>CUDA Tensors</h1>
+<p>So far, we have been allocating our tensors on the CPU memory. When doing linear algebra
+    operations, it might make sense to utilize a GPU, if you have one. To use a GPU, you need to first
+    allocate the tensor on the GPU’s memory. Access to the GPUs is via a specialized API called CUDA.
+    The CUDA API was created by NVIDIA and is limited to use on only NVIDIA GPUs. PyTorch
+    offers CUDA tensor objects that are indistinguishable in use from the regular CPU-bound tensors
+    except for the way they are allocated internally.</p>
+<p>PyTorch makes it very easy to create these CUDA tensors, transfering the tensor from the CPU to the
+    GPU while maintaining its underlying type. The preferred method in PyTorch is to be device agnostic
+    and write code that works whether it’s on the GPU or the CPU. In xample 1-16, we first check
+    whether a GPU is available by using torch.cuda.is_available(), and retrieve the device
+    name with torch.device(). Then, all future tensors are instantiated and moved to the target
+    device by using the .to(device) method.</p>
+<p>To operate on CUDA and non­CUDA objects, we need to ensure that they are on the same device. If
+    we don’t, the computations will break, as shown in
+    xample 1-17. This situation arises when
+    computing monitoring metrics that aren’t part of the computational graph, for instance. When
+    operating on two tensor objects, make sure they’re both on the same device.</p><hr>
+
+
+
+
+
+<p>Keep in mind that it is expensive to move data back and forth from the GPU. Therefore, the typical
+    procedure involves doing many of the parallelizable computations on the GPU and then transferring
+    just the final result back to the CPU. This will allow you to fully utilize the GPUs. If you have several
+    CUDA-visible devices (i.e., multiple GPUs), the best practice is to use the
+    CUDA_VISIBLE_DEVICES environment variable when executing the program, as shown here:</p>
+<p>We do not cover parallelism and multi­GPU training as a part of this book, but they are essential in
+    scaling experiments and sometimes even to train large models. We recommend that you refer to the PyTorch documentation and discussion forums for additional help and support on this topic.</p>
+
+<h1>Exercises</h1>
+<p>The best way to master a topic is to solve problems. Here are some warm-up exercises. Many of the
+    problems will require going through the official ocumentation and finding helpful functions.  
+<p>1. Create a 2D tensor and then add a dimension of size 1 inserted at dimension 0.</p>
+<p>2. Remove the extra dimension you just added to the previous tensor.</p>
+<p>3. Create a random tensor of shape 5x3 in the interval [3, 7)</p>
+<p>4. Create a tensor with values from a normal distribution (mean=0, std=1).</p>
+<p>5. Retrieve the indexes of all the nonzero elements in the tensor torch.Tensor([1, 1, 1,
+    0, 1]).</p></p>
+<p>6. Create a random tensor of size (3,1) and then horizontally stack four copies together.</p>
+<p>7. Return the batch matrix-matrix product of two three-dimensional matrices
+    (a=torch.rand(3,4,5), b=torch.rand(3,5,4)).</p>
+<p>8. Return the batch matrix-matrix product of a 3D matrix and a 2D matrix
+    (a=torch.rand(3,4,5), b=torch.rand(5,4)).</p><hr>
+
+
+
+
+
+<h1>Solutions</h1>
+<p>1. a = torch.rand(3, 3)
+    a.unsqueeze(0)</p>
+<p>2. a.squeeze(0)</p>
+<p>3. 3 + torch.rand(5, 3) * (7 - 3)</p>
+<p>4. a = torch.rand(3, 3)
+    a.normal_()</p>
+<p>5. a = torch.Tensor([1, 1, 1, 0, 1])
+    torch.nonzero(a)</p>
+<p>6. a = torch.rand(3, 1)
+    a.expand(3, 4)</p>
+<p>7. a = torch.rand(3, 4, 5)
+    b = torch.rand(3, 5, 4)
+    torch.bmm(a, b)</p>
+<p>8. a = torch.rand(3, 4, 5)
+    b = torch.rand(5, 4)
+    torch.bmm(a, b.unsqueeze(0).expand(a.size(0), *b.size()))</p>
+
+<h1>Summary</h1>
+<p>In this chapter, we introduced the main topics of this book—natural language processing, or NLP, and
+    deep learning—and developed a detailed understanding of the supervised learning paradigm. You
+    should now be familiar with, or at least aware of, various relevant terms such as observations, targets,
+    models, parameters, predictions, loss functions, representations, learning/training, and inference. You
+    also saw how to encode inputs (observations and targets) for learning tasks using one-hot encoding,
+    and we also examined count-based representations like TF and TF-IDF. We began our journey into
+    PyTorch by first exploring what computational graphs are, then considering static versus dynamic
+    computational graphs and taking a tour of PyTorch’s tensor manipulation operations. In hapter 2, we
+    provide an overview of traditional NLP. These two chapters should lay down the necessary foundation
+    for you if you’re new to the book’s subject matter and prepare for you for the rest of the chapters.</p><hr>
+
+
+
+
+
+<h1>References</h1>
+<p>1. PyTorch official API documentation.</p>
+<p>2. Dougherty, James, Ron Kohavi, and Mehran Sahami. (1995). “Supervised and Unsupervised
+    Discretization of Continuous Features.” Proceedings of the 12th International Conference on
+    Machine Learning.</p>
+<p>3. Collobert, Ronan, and Jason Weston. (2008). “A Unified Architecture for Natural Language
+    Processing: Deep Neural Networks with Multitask Learning.” Proceedings of the 25th
+    International Conference on Machine Learning.</p>
+
+</body>
+</html>
